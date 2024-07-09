@@ -101,12 +101,67 @@ def encontrar_todos_los_subgrupos(conjunto, operacion):
 
     return np.unique(subgrupos)
 
+def seleccionar_operacion():
+    print("Seleccione la operación:")
+    print("1. Suma módulo n")
+    print("2. Resta módulo n")
+    print("3. Multiplicación")
+    print("4. Operación personalizada")
+
+    opcion = int(input("Ingrese el número de la operación deseada: "))
+
+    if opcion == 1:
+        n = int(input("Ingrese el valor de n para la suma módulo n: "))
+        return lambda a, b: (a + b) % n
+    elif opcion == 2:
+        n = int(input("Ingrese el valor de n para la resta módulo n: "))
+        return lambda a, b: (a - b) % n
+    elif opcion == 3:
+        return lambda a, b: a * b
+    elif opcion == 4:
+        return definir_operacion_personalizada(conjunto)
+    else:
+        print("Opción no válida")
+        return None
+
+def definir_operacion_personalizada(conjunto):
+    print("Defina la tabla de Cayley:")
+    elementos = sorted(conjunto)
+    n = len(elementos)
+    tabla = []
+    for i in range(n):
+        fila = input(f"Ingrese la fila {elementos[i]} de la tabla de Cayley, separados por comas: ").split(",")
+        if len(fila) != n:
+            print("La cantidad de elementos en la fila no coincide con la cantidad de elementos en el conjunto.")
+            return None
+        tabla.append(fila)
+
+    def operacion(a, b):
+        return tabla[elementos.index(a)][elementos.index(b)]
+
+    return operacion
 
 # Ejemplo de uso
-conjunto = {0, 1, 2, 3, 4, 5}
-n = 6
-operacion = lambda a, b: (a + b) % n
+conjunto = input("Ingrese los elementos del conjunto separados por comas: ").split(",")
+operacion = seleccionar_operacion()
 
+if operacion:
+    tabla_cayley = generar_tabla_cayley(conjunto, operacion)
+    print("Tabla de Cayley:")
+    print(tabla_cayley)
+
+    if es_grupo(conjunto, operacion):
+        print("El conjunto con la operación es un grupo")
+        es_grupo_ciclico(conjunto, operacion)
+    else:
+        print("El conjunto con la operación no es un grupo")
+
+    subgrupos = encontrar_todos_los_subgrupos(conjunto, operacion)
+    print(f"Subgrupos encontrados: {subgrupos}")
+
+else:
+    print("No se seleccionó una operación válida.")
+# Ejemplo de uso
 if es_grupo(conjunto, operacion) == True:
     print("El conjunto con la operacion es un grupo")
     es_grupo_ciclico(conjunto, operacion)
